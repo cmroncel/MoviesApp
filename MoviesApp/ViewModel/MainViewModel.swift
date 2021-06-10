@@ -7,8 +7,13 @@
 
 import Foundation
 
+protocol MainViewModelDelegate: class {
+    func pageContentUpdated()
+}
+
 class MainViewModel {
     // MARK:- Properties
+    weak var delegate: MainViewModelDelegate?
     private let moviesRepository: MoviesRepository
     var movies: [Movie]?
     
@@ -17,8 +22,10 @@ class MainViewModel {
     }
     
     func getMovies() {
-        moviesRepository.getMovies(page: 1) {[weak self] (movies) in
+        moviesRepository.getMovies(page: 2) {[weak self] (movies) in
             self?.movies = movies
+            
+            self?.delegate?.pageContentUpdated()
         } error: {[weak self] (errorDTO) in
             print("Failed to getting movies")
         }

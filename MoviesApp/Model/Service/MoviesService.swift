@@ -19,8 +19,8 @@ extension MoviesService: TargetType {
     
     var path: String {
         switch self {
-        case .fetchMovies(let page):
-            return ""
+        case .fetchMovies(_):
+            return "3/movie/top_rated"
         }
     }
     
@@ -28,8 +28,6 @@ extension MoviesService: TargetType {
         switch self {
         case .fetchMovies(_):
             return .get
-        default:
-            fatalError("Method must be defined!!")
         }
     }
     
@@ -43,8 +41,8 @@ extension MoviesService: TargetType {
     
     var task: Task {
         switch self {
-        case .fetchMovies:
-            return .requestPlain
+        case .fetchMovies(let page):
+            return .requestParameters(parameters: ["api_key": ServiceConfiguration.api_key, "language": ServiceConfiguration.language, "page": page], encoding: URLEncoding.default)
         }
     }
     

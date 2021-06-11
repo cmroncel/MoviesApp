@@ -10,6 +10,9 @@ import Moya
 
 enum MoviesService {
     case fetchMovies(page: Int)
+    case fetchMovieDetail(movieId: Int)
+    case fetchMovieCredits(movieId: Int)
+    case fetchVideo(movieId: Int)
 }
 
 extension MoviesService: TargetType {
@@ -21,12 +24,21 @@ extension MoviesService: TargetType {
         switch self {
         case .fetchMovies(_):
             return "3/movie/top_rated"
+            
+        case .fetchMovieDetail(let movieId):
+            return "3/movie/\(movieId)"
+            
+        case .fetchMovieCredits(let movieId):
+            return "3/movie/\(movieId)/credits"
+            
+        case .fetchVideo(let movieId):
+            return "3/movie/\(movieId)/videos"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .fetchMovies(_):
+        case .fetchMovies(_), .fetchMovieDetail(_), .fetchMovieCredits(_), .fetchVideo(_):
             return .get
         }
     }
@@ -36,6 +48,18 @@ extension MoviesService: TargetType {
         case .fetchMovies(_):
             let sampleData = GetTopRatedMoviewsResponseDTO(page: 1, results: nil, total_pages: 1)
             return sampleData.jsonEncoded ?? Data()
+            
+        case .fetchMovieDetail(_):
+            let sampleData = Movie(id: 0, poster_path: "", overview: "", release_date: "", title: "", vote_average: 0.0, backdrop_path: "", video: false)
+            return sampleData.jsonEncoded ?? Data()
+            
+        case .fetchMovieCredits(_):
+            let sampleData = GetMovieCreditsResponseDTO(id: 1, cast: [])
+            return sampleData.jsonEncoded ?? Data()
+            
+        case .fetchVideo(_):
+            let sampleData = GetVideosResponseDTO(id: 1, results: [])
+            return sampleData.jsonEncoded ?? Data()
         }
     }
     
@@ -43,6 +67,9 @@ extension MoviesService: TargetType {
         switch self {
         case .fetchMovies(let page):
             return .requestParameters(parameters: ["api_key": ServiceConfiguration.api_key, "language": ServiceConfiguration.language, "page": page], encoding: URLEncoding.default)
+            
+        case .fetchMovieDetail(_), .fetchMovieCredits(_), .fetchVideo(_):
+            return .requestParameters(parameters: ["api_key": ServiceConfiguration.api_key, "language": ServiceConfiguration.language], encoding: URLEncoding.default)
         }
     }
     

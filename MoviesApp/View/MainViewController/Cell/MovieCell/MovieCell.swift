@@ -17,16 +17,20 @@ class MovieCell: UITableViewCell {
     @IBOutlet weak var averageVoteLabel: UILabel!
     
     func bind(movieItem: Movie) {
-        // Set title, relase date and average vote
         containerView.layer.cornerRadius = 10
         titleLabel.text = movieItem.title
         releaseDateLabel.text = movieItem.release_date
         averageVoteLabel.text = String(movieItem.vote_average ?? 0.0)
         
-        // Set image process
-        if let posterPath = movieItem.poster_path, let iconUrl = URL(string: ServiceConfiguration.apiImageBaseURL + "w400" + posterPath) {
-            let filter = AspectScaledToFitSizeFilter(size: posterImageView.bounds.size)
-            posterImageView.af.setImage(withURL: iconUrl, filter: filter)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {[weak self] in
+            guard let strongSelf = self else {
+                return
+            }
+            
+            if let posterPath = movieItem.poster_path, let iconUrl = URL(string: ServiceConfiguration.apiImageBaseURL + "w400" + posterPath) {
+                let filter = AspectScaledToFitSizeFilter(size: strongSelf.posterImageView.bounds.size)
+                strongSelf.posterImageView.af.setImage(withURL: iconUrl, filter: filter)
+            }
         }
     }
 }

@@ -11,23 +11,83 @@ protocol MainViewModelDelegate: class {
     func pageContentUpdated()
 }
 
-class MainViewModel {
+class MainViewModel: BaseViewModel {
     // MARK:- Properties
     weak var delegate: MainViewModelDelegate?
     private let moviesRepository: MoviesRepository
-    var movies: [Movie]?
     
-    init(moviesRepository: MoviesRepository = DefaultMoviesRepository()) {
+    var movies: [Movie]
+    
+    var moviesPage: Int
+    var isPagingEnabled: Bool
+    var isMovieListLoading: Bool
+    
+    init(moviesRepository: MoviesRepository = DefaultMoviesRepository(),
+         movies: [Movie] = [],
+         moviesPage: Int = 1,
+         isPagingEnabled: Bool = true,
+         isMovieListLoading: Bool = false) {
         self.moviesRepository = moviesRepository
+        
+        self.movies = movies
+        
+        self.moviesPage = moviesPage
+        self.isPagingEnabled = isPagingEnabled
+        self.isMovieListLoading = isMovieListLoading
+    }
+    
+    override func viewWillAppear() {
+        getMovies()
     }
     
     func getMovies() {
-        moviesRepository.getMovies(page: 2) {[weak self] (movies) in
-            self?.movies = movies
-            
-            self?.delegate?.pageContentUpdated()
-        } error: {[weak self] (errorDTO) in
-            print("Failed to getting movies")
+        if isMovieListLoading {
+            return
         }
+        
+        if isPagingEnabled {
+            baseVMDelegate?.contentWillLoad()
+            
+            isMovieListLoading = true
+            
+            moviesRepository.getMovies(page: moviesPage) {[weak self] (movies) in
+                if movies.count == 0 {
+                    self?.isPagingEnabled = false
+                }
+                
+                self?.movies += movies
+                
+                self?.moviesPage += 1
+                
+                self?.isMovieListLoading = false
+                
+                self?.delegate?.pageContentUpdated()
+                
+                self?.baseVMDelegate?.contentDidLoad()
+            } error: {[weak self] (errorDTO) in
+                print(errorDTO)
+                
+                self?.isMovieListLoading = false
+                
+                self?.baseVMDelegate?.contentDidLoad()
+            }
+        }
+    }
+    
+    func updateMoviesList(indexPath: Int) {
+        if indexPath == movies.count - 1 {
+            guard isPagingEnabled else {
+                return
+            }
+            
+            getMovies()
+        }
+    }
+    
+    func clearMoviesList() {
+        isPagingEnabled = true
+        moviesPage = 1
+        movies = []
+        isMovieListLoading = false
     }
 }

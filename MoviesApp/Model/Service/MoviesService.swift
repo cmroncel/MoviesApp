@@ -50,7 +50,7 @@ extension MoviesService: TargetType {
             return sampleData.jsonEncoded ?? Data()
             
         case .fetchMovieDetail(_):
-            let sampleData = Movie(id: 0, poster_path: "", overview: "", release_date: "", title: "", vote_average: 0.0, backdrop_path: "", video: false)
+            let sampleData = Movie(id: 0, poster_path: "", overview: "", release_date: "", title: "", vote_average: 0.0, backdrop_path: "")
             return sampleData.jsonEncoded ?? Data()
             
         case .fetchMovieCredits(_):

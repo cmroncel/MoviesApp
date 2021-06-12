@@ -13,5 +13,4 @@ struct Person: Codable {
     let profile_path: String?
     let cast_id: Int?
     let biography: String?
-    let credit_id: String?
 }

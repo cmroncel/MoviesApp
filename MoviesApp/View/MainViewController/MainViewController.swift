@@ -27,28 +27,102 @@ class MainViewController: BaseViewController {
         initUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if segmentedControl.selectedSegmentIndex == 0 {
+            viewModel.getMovies()
+        }
+        else {
+            viewModel.getPopularPeople()
+        }
+    }
+    
     // MARK:- UI Methods
     private func initUI() {
         tableView.delegate = self
         tableView.dataSource = self
         
+        searchBar.delegate = self
+        
         MovieCell.registerSelf(tableView: tableView)
+        PopularPeopleCell.registerSelf(tableView: tableView)
+    }
+    
+    @IBAction func segmentedControlChanged(_ sender: Any) {
+        viewModel.clearList()
+        
+        searchBar.text = nil
+        
+        if segmentedControl.selectedSegmentIndex == 0 {
+            viewModel.getMovies()
+        }
+        else {
+            viewModel.getPopularPeople()
+        }
+    }
+}
+
+// MARK:- UISearchBarDelegate Methods
+extension MainViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.endEditing(true)
+        
+        viewModel.clearList()
+        
+        if segmentedControl.selectedSegmentIndex == 0 {
+            if let query = searchBar.text {
+                if query.count < 1 {
+                    viewModel.isPagingEnabled = true
+                    viewModel.getMovies()
+                }
+                else {
+                    viewModel.searchMovie(query: query)
+                }
+            }
+        }
+        else {
+            if let query = searchBar.text {
+                if query.count < 1 {
+                    viewModel.isPagingEnabled = true
+                    viewModel.getPopularPeople()
+                }
+                else {
+                    viewModel.searchPerson(query: query)
+                }
+            }
+        }
     }
 }
 
 // MARK:- UITableViewDelegate & UITableViewDataSource Methods
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.movies.count
+        if segmentedControl.selectedSegmentIndex == 0 {
+            return viewModel.movies.count
+        }
+        else {
+            return viewModel.personItems.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell") as! MovieCell
-        cell.bind(movieItem: viewModel.movies[indexPath.row])
-        
-        viewModel.updateMoviesList(indexPath: indexPath.row)
-        
-        return cell
+        if segmentedControl.selectedSegmentIndex == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell") as! MovieCell
+            cell.bind(movieItem: viewModel.movies[indexPath.row])
+            
+            viewModel.updateMoviesList(indexPath: indexPath.row)
+            
+            return cell
+        }
+        else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "PopularPeopleCell") as! PopularPeopleCell
+            cell.bind(personItem: viewModel.personItems[indexPath.row])
+            
+            viewModel.updatePopulerPeopleList(indexPath: indexPath.row)
+            
+            return cell
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -60,8 +134,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             let vc: MovieDetailViewController = MovieDetailViewController.create(movieId: movieId)
             self.navigationController?.pushViewController(vc, animated: true)
         }
-        else {
-            
+        else if let personId = viewModel.personItems[indexPath.row].id {
+            let vc: PersonDetailViewController = PersonDetailViewController.create(personId: personId)
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
 }

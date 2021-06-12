@@ -21,8 +21,8 @@
                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zv0-ll-OwW">
                         <rect key="frame" x="16" y="8" width="534" height="239"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pencil" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="rPT-Cp-b7S">
-                                <rect key="frame" x="0.0" y="2.5" width="205" height="234.5"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="rPT-Cp-b7S">
+                                <rect key="frame" x="0.0" y="0.0" width="205" height="239"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="rPT-Cp-b7S" secondAttribute="height" multiplier="6:7" id="9NK-7v-C3b"/>
                                 </constraints>
@@ -84,7 +84,6 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <connections>
                 <outlet property="averageVoteLabel" destination="8HM-2f-TJ4" id="24b-a4-MAk"/>
-                <outlet property="containerView" destination="zv0-ll-OwW" id="PB5-bF-hEB"/>
                 <outlet property="posterImageView" destination="rPT-Cp-b7S" id="rcB-1Y-SNN"/>
                 <outlet property="releaseDateLabel" destination="6cR-4G-f8o" id="m6P-Pt-mhY"/>
                 <outlet property="titleLabel" destination="wtA-bm-Pat" id="tRj-es-0pw"/>
@@ -93,7 +92,6 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="pencil" catalog="system" width="128" height="113"/>
         <image name="star.fill" catalog="system" width="128" height="116"/>
         <systemColor name="systemGrayColor">
             <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

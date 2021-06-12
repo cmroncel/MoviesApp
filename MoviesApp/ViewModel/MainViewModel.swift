@@ -15,51 +15,57 @@ class MainViewModel: BaseViewModel {
     // MARK:- Properties
     weak var delegate: MainViewModelDelegate?
     private let moviesRepository: MoviesRepository
+    private let personRepository: PersonRepository
     
     var movies: [Movie]
+    var personItems: [PersonItem]
     
-    var moviesPage: Int
+    var page: Int
     var isPagingEnabled: Bool
-    var isMovieListLoading: Bool
+    var isListLoading: Bool
     
     init(moviesRepository: MoviesRepository = DefaultMoviesRepository(),
+         personRepository: PersonRepository = DefaultPersonRepository(),
          movies: [Movie] = [],
-         moviesPage: Int = 1,
+         personItems: [PersonItem] = [],
+         page: Int = 1,
          isPagingEnabled: Bool = true,
-         isMovieListLoading: Bool = false) {
+         isListLoading: Bool = false) {
         self.moviesRepository = moviesRepository
+        self.personRepository = personRepository
         
         self.movies = movies
+        self.personItems = personItems
         
-        self.moviesPage = moviesPage
+        self.page = page
         self.isPagingEnabled = isPagingEnabled
-        self.isMovieListLoading = isMovieListLoading
+        self.isListLoading = isListLoading
     }
     
-    override func viewWillAppear() {
-        getMovies()
+    override func viewDidDisappear() {
+        clearList()
     }
     
     func getMovies() {
-        if isMovieListLoading {
+        if isListLoading {
             return
         }
         
         if isPagingEnabled {
             baseVMDelegate?.contentWillLoad()
             
-            isMovieListLoading = true
+            isListLoading = true
             
-            moviesRepository.getMovies(page: moviesPage) {[weak self] (movies) in
+            moviesRepository.getMovies(page: page) {[weak self] (movies) in
                 if movies.count == 0 {
                     self?.isPagingEnabled = false
                 }
                 
                 self?.movies += movies
                 
-                self?.moviesPage += 1
+                self?.page += 1
                 
-                self?.isMovieListLoading = false
+                self?.isListLoading = false
                 
                 self?.delegate?.pageContentUpdated()
                 
@@ -67,11 +73,84 @@ class MainViewModel: BaseViewModel {
             } error: {[weak self] (errorDTO) in
                 print(errorDTO)
                 
-                self?.isMovieListLoading = false
+                self?.isListLoading = false
                 
                 self?.baseVMDelegate?.contentDidLoad()
             }
         }
+    }
+    
+    func getPopularPeople() {
+        if isListLoading {
+            return
+        }
+        
+        if isPagingEnabled {
+            baseVMDelegate?.contentWillLoad()
+            
+            isListLoading = true
+            
+            personRepository.getPopularPeople(page: page) {[weak self] (personItems) in
+                if personItems.count == 0 {
+                    self?.isPagingEnabled = false
+                }
+                
+                self?.personItems += personItems
+                
+                self?.page += 1
+                
+                self?.isListLoading = false
+                
+                self?.delegate?.pageContentUpdated()
+                
+                self?.baseVMDelegate?.contentDidLoad()
+            } error: {[weak self] (errorDTO) in
+                print(errorDTO)
+                
+                self?.isListLoading = false
+                
+                self?.baseVMDelegate?.contentDidLoad()
+            }
+        }
+    }
+    
+    func searchMovie(query: String) {
+        baseVMDelegate?.contentWillLoad()
+        
+        moviesRepository.searchMovies(query: query) {[weak self] (movies) in
+            self?.clearList()
+            
+            self?.movies = movies
+            self?.isPagingEnabled = false
+            
+            self?.delegate?.pageContentUpdated()
+            
+            self?.baseVMDelegate?.contentDidLoad()
+        } error: {[weak self] (errorDTO) in
+            print(errorDTO)
+            
+            self?.baseVMDelegate?.contentDidLoad()
+        }
+    }
+    
+    func searchPerson(query: String) {
+        baseVMDelegate?.contentWillLoad()
+        
+        personRepository.searchPerson(query: query) {[weak self](personItems) in
+            self?.clearList()
+            
+            self?.personItems = personItems
+            self?.isPagingEnabled = false
+            
+            self?.delegate?.pageContentUpdated()
+            
+            self?.baseVMDelegate?.contentDidLoad()
+        } error: { (errorDTO) in
+            print(errorDTO)
+            
+            self.baseVMDelegate?.contentDidLoad()
+        }
+
     }
     
     func updateMoviesList(indexPath: Int) {
@@ -84,10 +163,21 @@ class MainViewModel: BaseViewModel {
         }
     }
     
-    func clearMoviesList() {
+    func updatePopulerPeopleList(indexPath: Int) {
+        if indexPath == personItems.count - 1 {
+            guard isPagingEnabled else {
+                return
+            }
+            
+            getPopularPeople()
+        }
+    }
+    
+    func clearList() {
         isPagingEnabled = true
-        moviesPage = 1
+        page = 1
         movies = []
-        isMovieListLoading = false
+        personItems = []
+        isListLoading = false
     }
 }

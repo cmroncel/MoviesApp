@@ -17,7 +17,9 @@ class MovieCell: UITableViewCell {
     @IBOutlet weak var averageVoteLabel: UILabel!
     
     func bind(movieItem: Movie) {
-        containerView.layer.cornerRadius = 10
+        posterImageView.af.cancelImageRequest()
+        posterImageView.image = UIImage()
+        
         titleLabel.text = movieItem.title
         releaseDateLabel.text = movieItem.release_date
         averageVoteLabel.text = String(movieItem.vote_average ?? 0.0)

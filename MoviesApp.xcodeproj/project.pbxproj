@@ -54,6 +54,10 @@
 		50DDBA572674E16C00264341 /* GetPersonMovieCreditsResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50DDBA562674E16C00264341 /* GetPersonMovieCreditsResponseDTO.swift */; };
 		50DDBA612674E35900264341 /* PersonMovieCreditsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50DDBA5F2674E35900264341 /* PersonMovieCreditsCollectionViewCell.swift */; };
 		50DDBA622674E35900264341 /* PersonMovieCreditsCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 50DDBA602674E35900264341 /* PersonMovieCreditsCollectionViewCell.xib */; };
+		50DDBA6A2674F12500264341 /* PersonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50DDBA692674F12500264341 /* PersonItem.swift */; };
+		50DDBA6F2674F16100264341 /* GetPopularPeopleResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50DDBA6E2674F16100264341 /* GetPopularPeopleResponseDTO.swift */; };
+		50DDBA762674F48300264341 /* PopularPeopleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50DDBA742674F48300264341 /* PopularPeopleCell.swift */; };
+		50DDBA772674F48300264341 /* PopularPeopleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 50DDBA752674F48300264341 /* PopularPeopleCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -126,6 +130,10 @@
 		50DDBA562674E16C00264341 /* GetPersonMovieCreditsResponseDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPersonMovieCreditsResponseDTO.swift; sourceTree = "<group>"; };
 		50DDBA5F2674E35900264341 /* PersonMovieCreditsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonMovieCreditsCollectionViewCell.swift; sourceTree = "<group>"; };
 		50DDBA602674E35900264341 /* PersonMovieCreditsCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PersonMovieCreditsCollectionViewCell.xib; sourceTree = "<group>"; };
+		50DDBA692674F12500264341 /* PersonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonItem.swift; sourceTree = "<group>"; };
+		50DDBA6E2674F16100264341 /* GetPopularPeopleResponseDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPopularPeopleResponseDTO.swift; sourceTree = "<group>"; };
+		50DDBA742674F48300264341 /* PopularPeopleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopularPeopleCell.swift; sourceTree = "<group>"; };
+		50DDBA752674F48300264341 /* PopularPeopleCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PopularPeopleCell.xib; sourceTree = "<group>"; };
 		53D4506E55F22FE008656D36 /* Pods_MoviesApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MoviesApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		54CCB1E78B3DFE7538F91D05 /* Pods-MoviesAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoviesAppTests.debug.xcconfig"; path = "Target Support Files/Pods-MoviesAppTests/Pods-MoviesAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5BB610D929A823A0F73DEE70 /* Pods-MoviesApp-MoviesAppUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoviesApp-MoviesAppUITests.release.xcconfig"; path = "Target Support Files/Pods-MoviesApp-MoviesAppUITests/Pods-MoviesApp-MoviesAppUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -176,6 +184,7 @@
 		501C1B552672A5150027B9DB /* Cell */ = {
 			isa = PBXGroup;
 			children = (
+				50DDBA732674F46200264341 /* PopularPeopleCell */,
 				501C1B562672A51C0027B9DB /* MovieCell */,
 			);
 			path = Cell;
@@ -306,6 +315,7 @@
 				504AEA752671538B002F6F4A /* Movie.swift */,
 				504AEA7D267153F4002F6F4A /* Person.swift */,
 				5079E0C0267418840097DF8A /* Video.swift */,
+				50DDBA692674F12500264341 /* PersonItem.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -336,6 +346,7 @@
 				5079E0BB267411870097DF8A /* GetMovieCreditsResponseDTO.swift */,
 				5079E0C5267419750097DF8A /* GetVideosResponseDTO.swift */,
 				50DDBA562674E16C00264341 /* GetPersonMovieCreditsResponseDTO.swift */,
+				50DDBA6E2674F16100264341 /* GetPopularPeopleResponseDTO.swift */,
 			);
 			path = DTO;
 			sourceTree = "<group>";
@@ -405,6 +416,15 @@
 				50DDBA602674E35900264341 /* PersonMovieCreditsCollectionViewCell.xib */,
 			);
 			path = Cell;
+			sourceTree = "<group>";
+		};
+		50DDBA732674F46200264341 /* PopularPeopleCell */ = {
+			isa = PBXGroup;
+			children = (
+				50DDBA742674F48300264341 /* PopularPeopleCell.swift */,
+				50DDBA752674F48300264341 /* PopularPeopleCell.xib */,
+			);
+			path = PopularPeopleCell;
 			sourceTree = "<group>";
 		};
 		F5C9A31B2098AAABC11B3CA7 /* Pods */ = {
@@ -537,6 +557,7 @@
 				504AEA5826714FE0002F6F4A /* MainViewController.xib in Resources */,
 				504AEA07267149C8002F6F4A /* Main.storyboard in Resources */,
 				5079E0A726740B610097DF8A /* CastCollectionViewCell.xib in Resources */,
+				50DDBA772674F48300264341 /* PopularPeopleCell.xib in Resources */,
 				501C1B5A2672A5400027B9DB /* MovieCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -679,6 +700,7 @@
 				501C1B4C2672A4360027B9DB /* UITableViewCell.swift in Sources */,
 				504AEAA82671642F002F6F4A /* MainViewModel.swift in Sources */,
 				5079E08D2673EBA90097DF8A /* BaseViewController.swift in Sources */,
+				50DDBA762674F48300264341 /* PopularPeopleCell.swift in Sources */,
 				504AEA8F26715673002F6F4A /* MoviesRepository.swift in Sources */,
 				504AEA972671577C002F6F4A /* MoyaRequestWrapper.swift in Sources */,
 				504AEA842671553A002F6F4A /* MoviesService.swift in Sources */,
@@ -687,9 +709,11 @@
 				501C1B592672A5400027B9DB /* MovieCell.swift in Sources */,
 				5079E0BC267411870097DF8A /* GetMovieCreditsResponseDTO.swift in Sources */,
 				50DDBA572674E16C00264341 /* GetPersonMovieCreditsResponseDTO.swift in Sources */,
+				50DDBA6F2674F16100264341 /* GetPopularPeopleResponseDTO.swift in Sources */,
 				5079E0992673EDE60097DF8A /* MovieDetailViewController.swift in Sources */,
 				504AEA00267149C8002F6F4A /* AppDelegate.swift in Sources */,
 				5079E0A626740B610097DF8A /* CastCollectionViewCell.swift in Sources */,
+				50DDBA6A2674F12500264341 /* PersonItem.swift in Sources */,
 				504AEA89267155A1002F6F4A /* ServiceConfiguration.swift in Sources */,
 				50DDBA522674DE2200264341 /* PersonRepository.swift in Sources */,
 				5079E09F2673EE9F0097DF8A /* MovieDetailViewModel.swift in Sources */,

@@ -49,6 +49,9 @@
                         <segment title="Persons"/>
                     </segments>
                     <color key="selectedSegmentTintColor" systemColor="systemPinkColor"/>
+                    <connections>
+                        <action selector="segmentedControlChanged:" destination="-1" eventType="valueChanged" id="7Qn-f4-A2Q"/>
+                    </connections>
                 </segmentedControl>
                 <searchBar contentMode="redraw" searchBarStyle="minimal" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="IBE-hb-m9f">
                     <rect key="frame" x="0.0" y="171" width="414" height="50"/>

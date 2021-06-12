@@ -12,6 +12,7 @@ protocol MoviesRepository {
     func getMovieDetail(movieId: Int, completion: @escaping (Movie) -> Void, error: @escaping (String) -> Void)
     func getCredits(movieId: Int, completion: @escaping ([Person]) -> Void, error: @escaping (String) -> Void)
     func getVideos(movieId: Int, completion: @escaping ([Video]) -> Void, error: @escaping (String) -> Void)
+    func searchMovies(query: String, completion: @escaping ([Movie]) -> Void, error: @escaping (String) -> Void)
 }
 
 class DefaultMoviesRepository: MoviesRepository {
@@ -44,6 +45,14 @@ class DefaultMoviesRepository: MoviesRepository {
             completion(response.results ?? [])
         } error: { (errorDTO) in
             error("Fetching movie videos failed")
+        }
+    }
+    
+    func searchMovies(query: String, completion: @escaping ([Movie]) -> Void, error: @escaping (String) -> Void) {
+        MoviesService.searchMovie(query: query).request(responseDTO: GetTopRatedMoviewsResponseDTO.self) { (response) in
+            completion(response.results ?? [])
+        } error: { (errorDTO) in
+            error("Searching movies failed")
         }
     }
 }

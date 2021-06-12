@@ -13,6 +13,7 @@ enum MoviesService {
     case fetchMovieDetail(movieId: Int)
     case fetchMovieCredits(movieId: Int)
     case fetchVideo(movieId: Int)
+    case searchMovie(query: String)
 }
 
 extension MoviesService: TargetType {
@@ -23,29 +24,32 @@ extension MoviesService: TargetType {
     var path: String {
         switch self {
         case .fetchMovies(_):
-            return "3/movie/top_rated"
+            return "/movie/top_rated"
             
         case .fetchMovieDetail(let movieId):
-            return "3/movie/\(movieId)"
+            return "/movie/\(movieId)"
             
         case .fetchMovieCredits(let movieId):
-            return "3/movie/\(movieId)/credits"
+            return "/movie/\(movieId)/credits"
             
         case .fetchVideo(let movieId):
-            return "3/movie/\(movieId)/videos"
+            return "/movie/\(movieId)/videos"
+            
+        case .searchMovie(_):
+            return "/search/movie"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .fetchMovies(_), .fetchMovieDetail(_), .fetchMovieCredits(_), .fetchVideo(_):
+        case .fetchMovies(_), .fetchMovieDetail(_), .fetchMovieCredits(_), .fetchVideo(_), .searchMovie(_):
             return .get
         }
     }
     
     var sampleData: Data {
         switch self {
-        case .fetchMovies(_):
+        case .fetchMovies(_), .searchMovie(_):
             let sampleData = GetTopRatedMoviewsResponseDTO(page: 1, results: nil, total_pages: 1)
             return sampleData.jsonEncoded ?? Data()
             
@@ -70,6 +74,9 @@ extension MoviesService: TargetType {
             
         case .fetchMovieDetail(_), .fetchMovieCredits(_), .fetchVideo(_):
             return .requestParameters(parameters: ["api_key": ServiceConfiguration.api_key, "language": ServiceConfiguration.language], encoding: URLEncoding.default)
+            
+        case .searchMovie(let query):
+            return .requestParameters(parameters: ["api_key": ServiceConfiguration.api_key, "language": ServiceConfiguration.language, "query": query], encoding: URLEncoding.default)
         }
     }
     

@@ -1,5 +1,5 @@
 //
-//  TrailersCollectionViewCell.swift
+//  TrailersTableViewCell.swift
 //  MoviesApp
 //
 //  Created by Cemre Öncel on 12.06.2021.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TrailersCollectionViewCell: UICollectionViewCell {
+class TrailersTableViewCell: UITableViewCell {
     // MARK:- Views
     @IBOutlet weak var nameLabel: UILabel!
     

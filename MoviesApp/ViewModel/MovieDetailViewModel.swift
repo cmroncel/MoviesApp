@@ -7,9 +7,7 @@
 
 import Foundation
 protocol MovieDetailViewModelDelegate: class {
-    func movieDetailUpdated(movie: Movie)
-    func castMembersUpdated()
-    func videosUpdated()
+    func pageContentUpdated()
 }
 
 class MovieDetailViewModel: BaseViewModel {
@@ -19,6 +17,11 @@ class MovieDetailViewModel: BaseViewModel {
     var movieId: Int?
     var castMembers: [Person]
     var videos: [Video]
+    var movie: Movie?
+    
+    private var dispatchGroup: DispatchGroup?
+    private var isPageContentFailed: Bool
+    private var errorDTO: String?
     
     init(moviesRepository: MoviesRepository = DefaultMoviesRepository(),
          castMembers: [Person] = [],
@@ -26,63 +29,81 @@ class MovieDetailViewModel: BaseViewModel {
         self.moviesRepository = moviesRepository
         self.castMembers = castMembers
         self.videos = videos
+        
+        self.isPageContentFailed = false
     }
     
     override func viewWillAppear() {
-        getMovieDetail()
-        getCastMembers()
-        getVideos()
+        loadData()
     }
     
-    private func getMovieDetail() {
+    private func loadData() {
         if let movieId = movieId {
-            baseVMDelegate?.contentWillLoad()
+            self.baseVMDelegate?.contentWillLoad()
             
+            dispatchGroup = DispatchGroup()
+            dispatchGroup?.enter()
+            
+            isPageContentFailed = false
+            
+            // Get Movie Detail
             self.moviesRepository.getMovieDetail(movieId: movieId) {[weak self] (movie) in
-                self?.delegate?.movieDetailUpdated(movie: movie)
+                self?.movie = movie
                 
-                self?.baseVMDelegate?.contentDidLoad()
+                self?.dispatchGroup?.leave()
             } error: {[weak self] (errorDTO) in
-                print(errorDTO)
-                
                 self?.baseVMDelegate?.contentDidLoad()
+                
+                self?.errorDTO = errorDTO
+                self?.isPageContentFailed = true
+                
+                self?.dispatchGroup?.leave()
             }
-        }
-    }
-    
-    private func getCastMembers() {
-        if let movieId = movieId {
-            baseVMDelegate?.contentWillLoad()
             
-            self.moviesRepository.getCredits(movieId: movieId) {[weak self] (castMembers) in
-                self?.castMembers = castMembers
-                
-                self?.delegate?.castMembersUpdated()
-                
-                self?.baseVMDelegate?.contentDidLoad()
-            } error: { (errorDTO) in
-                print(errorDTO)
-                
-                self.baseVMDelegate?.contentDidLoad()
-            }
-        }
-    }
-    
-    private func getVideos() {
-        if let movieId = movieId {
-            baseVMDelegate?.contentWillLoad()
-            
+            dispatchGroup?.enter()
+            // Get Videos
             self.moviesRepository.getVideos(movieId: movieId) {[weak self] (videos) in
                 self?.videos = videos
                 
-                self?.delegate?.videosUpdated()
-                
-                self?.baseVMDelegate?.contentDidLoad()
+                self?.dispatchGroup?.leave()
             } error: {[weak self] (errorDTO) in
-                print(errorDTO)
+                self?.baseVMDelegate?.contentDidLoad()
+                
+                self?.errorDTO = errorDTO
+                self?.isPageContentFailed = true
+                
+                self?.dispatchGroup?.leave()
+            }
+            
+            dispatchGroup?.enter()
+            // Get Cast Members
+            self.moviesRepository.getCredits(movieId: movieId) {[weak self] (castMembers) in
+                self?.castMembers = castMembers
+                
+                self?.dispatchGroup?.leave()
+            } error: {[weak self] (errorDTO) in
+                self?.baseVMDelegate?.contentDidLoad()
+                
+                self?.errorDTO = errorDTO
+                self?.isPageContentFailed = true
+                
+                self?.dispatchGroup?.leave()
+            }
+            
+            dispatchGroup?.notify(queue: .main, execute: {[weak self] in
+                guard let strongSelf = self else {
+                    return
+                }
+                
+                if strongSelf.isPageContentFailed {
+                    print(self?.errorDTO)
+                }
+                else {
+                    self?.delegate?.pageContentUpdated()
+                }
                 
                 self?.baseVMDelegate?.contentDidLoad()
-            }
+            })
         }
     }
 }

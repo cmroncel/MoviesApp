@@ -16,11 +16,10 @@ class MovieDetailViewController: BaseViewController {
     // MARK:- Views
     @IBOutlet weak var coverImageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var overviewLabel: UILabel!
+    @IBOutlet weak var overviewTextView: UITextView!
     @IBOutlet weak var averageVoteLabel: UILabel!
-    @IBOutlet weak var trailersLabel: UILabel!
-    @IBOutlet weak var trailersCollectionView: UICollectionView!
     @IBOutlet weak var castMembersCollectionView: UICollectionView!
+    @IBOutlet weak var videosTableView: UITableView!
     
     override func provideViewModel() -> BaseViewModel? {
         return viewModel
@@ -34,17 +33,15 @@ class MovieDetailViewController: BaseViewController {
     
     // MARK:- UI Methods
     private func initUI() {
+        videosTableView.delegate = self
+        videosTableView.dataSource = self
+        
+        TrailersTableViewCell.registerSelf(tableView: videosTableView)
+        
         castMembersCollectionView.dataSource = self
         castMembersCollectionView.delegate = self
         
-        trailersCollectionView.dataSource = self
-        trailersCollectionView.delegate = self
-        
         CastCollectionViewCell.registerSelf(collectionView: castMembersCollectionView)
-        TrailersCollectionViewCell.registerSelf(collectionView: trailersCollectionView)
-        
-        castMembersCollectionView.reloadData()
-        trailersCollectionView.reloadData()
         
         setCollectionViewLayout()
     }
@@ -57,14 +54,44 @@ class MovieDetailViewController: BaseViewController {
         layout.scrollDirection = .horizontal
         
         self.castMembersCollectionView.collectionViewLayout = layout
-        self.castMembersCollectionView.reloadData()
         
-        self.trailersCollectionView.collectionViewLayout = layout
-        self.trailersCollectionView.reloadData()
+        castMembersCollectionView.reloadData()
     }
     
     @IBAction func backButtonClicked(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
+    }
+}
+
+// MARK:- UITableViewDelegate & UITableViewDataSource Methods
+extension MovieDetailViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.videos.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TrailersTableViewCell", for: indexPath) as! TrailersTableViewCell
+        
+        if let name = viewModel.videos[indexPath.row].name {
+            cell.bind(name: name)
+        }
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let key = viewModel.videos[indexPath.row].key {
+            guard let url = URL(string: "https://www.youtube.com/watch?v=\(key)") else {
+                return
+            }
+            
+            let vc = SFSafariViewController(url: url)
+            self.present(vc, animated: true, completion: nil)
+        }
     }
 }
 
@@ -75,74 +102,49 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout, UIColle
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView == castMembersCollectionView {
-            return viewModel.castMembers.count
-        }
-        else {
-            return viewModel.videos.count
-        }
+        return viewModel.castMembers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == castMembersCollectionView {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CastCollectionViewCell", for: indexPath) as! CastCollectionViewCell
-            
-            if let name = viewModel.castMembers[indexPath.row].name, let imageUrl = viewModel.castMembers[indexPath.row].profile_path {
-                cell.bind(name: name, imageUrl: imageUrl)
-            }
-            
-            return cell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CastCollectionViewCell", for: indexPath) as! CastCollectionViewCell
+        
+        if let name = viewModel.castMembers[indexPath.row].name, let imageUrl = viewModel.castMembers[indexPath.row].profile_path {
+            cell.bind(name: name, imageUrl: imageUrl)
         }
-        else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TrailersCollectionViewCell", for: indexPath) as! TrailersCollectionViewCell
-            
-            if let name = viewModel.videos[indexPath.row].name {
-                cell.bind(name: name)
-            }
-            
-            return cell
-        }
+        
+        return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView == trailersCollectionView {
-            if let key = viewModel.videos[indexPath.row].key {
-                guard let url = URL(string: "https://www.youtube.com/watch?v=\(key)") else {
-                    return
-                }
-                
-                let vc = SFSafariViewController(url: url)
-                self.present(vc, animated: true, completion: nil)
-            }
+        if let personId = viewModel.castMembers[indexPath.row].id {
+            let vc: PersonDetailViewController = PersonDetailViewController.create(personId: personId)
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
 }
 
 // MARK:- MovieDetailViewModelDelegate Methods
 extension MovieDetailViewController: MovieDetailViewModelDelegate {
-    func movieDetailUpdated(movie: Movie) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {[weak self] in
-            guard let strongSelf = self else {
-                return
+    func pageContentUpdated() {
+        if let movie = viewModel.movie {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {[weak self] in
+                guard let strongSelf = self else {
+                    return
+                }
+                
+                if let coverPhoto = movie.backdrop_path, let iconUrl = URL(string: ServiceConfiguration.apiImageBaseURL + "w500" + coverPhoto) {
+                    let filter = AspectScaledToFillSizeFilter(size: strongSelf.coverImageView.bounds.size)
+                    strongSelf.coverImageView.af.setImage(withURL: iconUrl, filter: filter)
+                }
             }
             
-            if let coverPhoto = movie.backdrop_path, let iconUrl = URL(string: ServiceConfiguration.apiImageBaseURL + "w500" + coverPhoto) {
-                let filter = AspectScaledToFillSizeFilter(size: strongSelf.coverImageView.bounds.size)
-                strongSelf.coverImageView.af.setImage(withURL: iconUrl, filter: filter)
-            }
+            titleLabel.text = movie.title
+            overviewTextView.text = movie.overview
+            averageVoteLabel.text = String(movie.vote_average ?? 0)
         }
         
-        titleLabel.text = movie.title
-        overviewLabel.text = movie.overview
-        averageVoteLabel.text = String(movie.vote_average ?? 0)
-    }
-    
-    func castMembersUpdated() {
         castMembersCollectionView.reloadData()
-    }
-    
-    func videosUpdated() {
-        trailersCollectionView.reloadData()
+        videosTableView.reloadData()
     }
 }
 

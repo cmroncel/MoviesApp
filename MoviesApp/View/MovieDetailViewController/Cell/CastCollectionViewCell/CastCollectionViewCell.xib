@@ -22,7 +22,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="177" height="231"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="LK4-4J-mnU">
-                                <rect key="frame" x="8" y="8" width="161" height="166"/>
+                                <rect key="frame" x="8" y="8" width="161" height="190"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W7T-BP-SK9">
                                 <rect key="frame" x="4" y="206" width="169" height="17"/>
@@ -33,7 +33,7 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="W7T-BP-SK9" firstAttribute="top" secondItem="LK4-4J-mnU" secondAttribute="bottom" constant="32" id="1qq-ez-hPp"/>
+                            <constraint firstItem="W7T-BP-SK9" firstAttribute="top" secondItem="LK4-4J-mnU" secondAttribute="bottom" constant="8" id="1qq-ez-hPp"/>
                             <constraint firstAttribute="bottom" secondItem="W7T-BP-SK9" secondAttribute="bottom" constant="8" id="Ex6-O1-bdH"/>
                             <constraint firstItem="W7T-BP-SK9" firstAttribute="leading" secondItem="Kbc-SP-435" secondAttribute="leading" constant="4" id="fSM-0u-fI8"/>
                             <constraint firstAttribute="trailing" secondItem="W7T-BP-SK9" secondAttribute="trailing" constant="4" id="hDa-Xy-76z"/>

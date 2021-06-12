@@ -10,6 +10,8 @@ import Foundation
 protocol PersonRepository {
     func getPersonDetail(personId: Int, completion: @escaping (Person) -> Void, error: @escaping (String) -> Void)
     func getPersonMovieCredits(personId: Int, completion: @escaping ([Movie]) -> Void, error: @escaping (String) -> Void)
+    func getPopularPeople(page: Int, completion: @escaping ([PersonItem]) -> Void, error: @escaping (String) -> Void)
+    func searchPerson(query: String, completion: @escaping ([PersonItem]) -> Void, error: @escaping (String) -> Void)
 }
 
 class DefaultPersonRepository: PersonRepository {
@@ -26,6 +28,22 @@ class DefaultPersonRepository: PersonRepository {
             completion(response.cast ?? [])
         } error: { (errorDTO) in
             error("Fetching person movie credits failed")
+        }
+    }
+    
+    func getPopularPeople(page: Int, completion: @escaping ([PersonItem]) -> Void, error: @escaping (String) -> Void) {
+        PersonService.fetchPopularPeople(page: page).request(responseDTO: GetPopularPeopleResponseDTO.self) { (response) in
+            completion(response.results ?? [])
+        } error: { (errorDTO) in
+            error("Fetching popular people failed")
+        }
+    }
+    
+    func searchPerson(query: String, completion: @escaping ([PersonItem]) -> Void, error: @escaping (String) -> Void) {
+        PersonService.searchPerson(query: query).request(responseDTO: GetPopularPeopleResponseDTO.self) { (response) in
+            completion(response.results ?? [])
+        } error: { (errorDTO) in
+            error("Searching person failed")
         }
     }
 }

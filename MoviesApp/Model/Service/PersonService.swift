@@ -11,6 +11,8 @@ import Moya
 enum PersonService {
     case fetchPersonDetail(personId: Int)
     case fetchPersonMovieCredits(personId: Int)
+    case fetchPopularPeople(page: Int)
+    case searchPerson(query: String)
 }
 
 extension PersonService: TargetType {
@@ -21,16 +23,22 @@ extension PersonService: TargetType {
     var path: String {
         switch self {
         case .fetchPersonDetail(let personId):
-            return "/3/person/\(personId)"
+            return "/person/\(personId)"
             
         case .fetchPersonMovieCredits(let personId):
-            return "3/person/\(personId)/movie_credits"
+            return "/person/\(personId)/movie_credits"
+            
+        case .fetchPopularPeople(_):
+            return "/person/popular"
+            
+        case .searchPerson(_):
+            return "/search/person"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .fetchPersonDetail(_), .fetchPersonMovieCredits(_):
+        case .fetchPersonDetail(_), .fetchPersonMovieCredits(_), .fetchPopularPeople(_), .searchPerson(_):
             return .get
         }
     }
@@ -44,6 +52,10 @@ extension PersonService: TargetType {
         case .fetchPersonMovieCredits(_):
             let sampleData = GetPersonMovieCreditsResponseDTO(id: 0, cast: [])
             return sampleData.jsonEncoded ?? Data()
+            
+        case .fetchPopularPeople(_), .searchPerson(_):
+            let sampleData = GetPopularPeopleResponseDTO(results: [])
+            return sampleData.jsonEncoded ?? Data()
         }
     }
     
@@ -51,6 +63,12 @@ extension PersonService: TargetType {
         switch self {
         case .fetchPersonDetail(_), .fetchPersonMovieCredits(_):
             return .requestParameters(parameters: ["api_key": ServiceConfiguration.api_key, "language": ServiceConfiguration.language], encoding: URLEncoding.default)
+            
+        case .fetchPopularPeople(let page):
+            return .requestParameters(parameters: ["api_key": ServiceConfiguration.api_key, "language": ServiceConfiguration.language, "page": page], encoding: URLEncoding.default)
+            
+        case .searchPerson(let query):
+            return .requestParameters(parameters: ["api_key": ServiceConfiguration.api_key, "language": ServiceConfiguration.language, "query": query], encoding: URLEncoding.default)
         }
     }
     
